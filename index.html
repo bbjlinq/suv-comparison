@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUV Comparison 2025 — Family Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e12; --surface: #14161c; --card: #1a1d26; --border: #252836;
+    --accent: #e8c547; --accent2: #4fc3f7; --accent3: #81c784; --accent4: #ef5350; --accent5: #f48fb1;
+    --text: #e8eaf0; --muted: #7a7f94;
+    --tag-gas: #2a3a2a; --tag-gas-t: #81c784;
+    --tag-hybrid: #2a3520; --tag-hybrid-t: #aed581;
+    --tag-ev: #1a2a3a; --tag-ev-t: #4fc3f7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; }
+
+  header {
+    background: linear-gradient(135deg, #0d0e12 0%, #1a1d26 50%, #0d0e12 100%);
+    border-bottom: 1px solid var(--border); padding: 28px 40px 20px; position: relative; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; top: -40px; right: -60px; width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(232,197,71,0.08) 0%, transparent 70%); pointer-events: none;
+  }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 3px; color: var(--accent); line-height: 1; }
+  header p { color: var(--muted); margin-top: 5px; font-size: 13px; }
+  .header-badges { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .hbadge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid; }
+  .hb-fam { border-color: rgba(244,143,177,0.4); color: var(--accent5); background: rgba(244,143,177,0.08); }
+  .hb-car { border-color: rgba(79,195,247,0.4); color: var(--accent2); background: rgba(79,195,247,0.08); }
+  .hb-rem { border-color: rgba(239,83,80,0.4); color: var(--accent4); background: rgba(239,83,80,0.06); }
+
+  /* CONTROLS */
+  .controls {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 14px 40px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .controls label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  .filter-btn {
+    padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0d0e12; font-weight: 600; }
+  .view-toggle { margin-left: auto; display: flex; gap: 6px; }
+  .view-btn {
+    padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer; font-size: 12px; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .view-btn.active { background: var(--surface); border-color: var(--accent); color: var(--accent); }
+
+  /* MAIN */
+  main { padding: 28px 40px; }
+
+  /* ── CARD GRID VIEW ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .vehicle-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .vehicle-card:hover { border-color: rgba(232,197,71,0.4); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+  .vehicle-card.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+  .card-img {
+    width: 100%; height: 185px; object-fit: cover; background: var(--surface);
+    display: block; border-bottom: 1px solid var(--border);
+  }
+  .card-img-placeholder {
+    width: 100%; height: 185px; background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 32px; border-bottom: 1px solid var(--border);
+  }
+  .card-body { padding: 16px; }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .card-name { font-weight: 700; font-size: 15px; color: var(--text); }
+  .card-model { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+  .tag-gas { background: var(--tag-gas); color: var(--tag-gas-t); }
+  .tag-hybrid { background: var(--tag-hybrid); color: var(--tag-hybrid-t); }
+  .tag-ev { background: var(--tag-ev); color: var(--tag-ev-t); }
+
+  .card-price { font-family: 'DM Mono', monospace; font-size: 18px; color: var(--accent); font-weight: 500; }
+  .card-price-sub { font-size: 10px; color: var(--muted); }
+
+  .card-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 12px 0; }
+  .cstat { text-align: center; background: var(--surface); border-radius: 8px; padding: 7px 4px; }
+  .cstat-val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text); }
+  .cstat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  /* Reliability gauge */
+  .reliability-bar-wrap { margin: 10px 0 6px; }
+  .rel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .rel-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .rel-score { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; }
+  .rel-verdict { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rel-bar-bg { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .rel-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+
+  .rel-excellent .rel-score, .rel-excellent .rel-verdict { color: #81c784; }
+  .rel-excellent .rel-bar-fill { background: linear-gradient(90deg, #4caf50, #81c784); }
+  .rel-good .rel-score, .rel-good .rel-verdict { color: #aed581; }
+  .rel-good .rel-bar-fill { background: linear-gradient(90deg, #8bc34a, #aed581); }
+  .rel-average .rel-score, .rel-average .rel-verdict { color: var(--accent); }
+  .rel-average .rel-bar-fill { background: linear-gradient(90deg, #f9a825, #e8c547); }
+  .rel-mixed .rel-score, .rel-mixed .rel-verdict { color: #ffb74d; }
+  .rel-mixed .rel-bar-fill { background: linear-gradient(90deg, #fb8c00, #ffb74d); }
+  .rel-poor .rel-score, .rel-poor .rel-verdict { color: #ef5350; }
+  .rel-poor .rel-bar-fill { background: linear-gradient(90deg, #c62828, #ef5350); }
+
+  .card-family { display: flex; gap: 8px; font-size: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .cfam-item { display: flex; align-items: center; gap: 4px; color: var(--muted); }
+  .cfam-val { color: var(--text); font-weight: 600; }
+  .stroller-yes { color: var(--accent3); }
+  .stroller-tight { color: var(--accent); }
+
+  /* ── TABLE VIEW ── */
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); display: none; }
+  table { width: 100%; border-collapse: collapse; min-width: 1080px; }
+  thead th {
+    background: var(--surface); padding: 11px 12px; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted);
+    font-weight: 600; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  thead th.th-fam { color: var(--accent5); }
+  thead th.th-rel { color: var(--accent3); }
+  tbody tr { border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(232,197,71,0.04); }
+  tbody tr.selected { background: rgba(232,197,71,0.08); border-left: 3px solid var(--accent); }
+  td { padding: 11px 12px; font-size: 13px; vertical-align: middle; background: var(--card); }
+  td.name-cell { font-weight: 600; min-width: 140px; }
+  td.name-cell .sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .thumb { width: 72px; height: 46px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); }
+  .thumb-placeholder { width: 72px; height: 46px; border-radius: 6px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid var(--border); }
+
+  .price-val { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 500; }
+  .price-top { font-size: 10px; color: var(--muted); margin-top: 1px; }
+  .mpg-val { font-family: 'DM Mono', monospace; font-size: 12px; }
+  .mpg-note { font-size: 10px; color: var(--muted); }
+  .mpg-bar { height: 3px; width: 50px; background: var(--border); border-radius: 2px; margin-top: 3px; overflow: hidden; }
+  .mpg-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent3), var(--accent2)); }
+  .check { color: var(--accent3); } .optional { color: var(--accent); font-size: 11px; }
+  .comfort-stars { color: var(--accent); font-size: 12px; }
+  .comfort-stars .e { color: var(--border); }
+  .pips { display: flex; gap: 3px; }
+  .pip { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+  .pip.on { background: var(--accent2); }
+
+  .trel-bar { height: 4px; width: 60px; border-radius: 2px; margin-top: 4px; overflow: hidden; background: var(--border); }
+  .trel-fill { height: 100%; border-radius: 2px; }
+
+  .stroller-cell { text-align: center; }
+  .kids-cell { text-align: center; font-size: 13px; }
+
+  .cat-row td { background: var(--surface); padding: 6px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 700; border: none; }
+
+  /* DETAIL PANEL (shared) */
+  .detail-overlay {
+    display: none; position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .detail-overlay.open { display: flex; }
+  .detail-modal {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto;
+    position: relative;
+  }
+  .modal-img { width: 100%; height: 220px; object-fit: cover; border-radius: 16px 16px 0 0; display: block; }
+  .modal-img-placeholder { width: 100%; height: 220px; background: var(--surface); border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+  .modal-body { padding: 20px; }
+  .modal-close {
+    position: absolute; top: 12px; right: 14px; background: rgba(0,0,0,0.5);
+    border: none; color: #fff; font-size: 18px; cursor: pointer; border-radius: 50%;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-name { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 2px; color: var(--accent); }
+  .modal-sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+
+  .modal-price-box { background: linear-gradient(135deg, rgba(232,197,71,0.12), rgba(232,197,71,0.04)); border: 1px solid rgba(232,197,71,0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
+  .mph-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .mph-val { font-family: 'DM Mono', monospace; font-size: 22px; color: var(--accent); margin-top: 1px; }
+  .mph-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  .modal-section { margin-top: 14px; }
+  .modal-section h3 { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+  .modal-row { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; font-size: 12px; }
+  .modal-row .mk { color: var(--muted); flex-shrink: 0; }
+  .modal-row .mv { color: var(--text); font-weight: 500; text-align: right; }
+
+  .modal-fam-box { background: linear-gradient(135deg, rgba(244,143,177,0.1), rgba(244,143,177,0.03)); border: 1px solid rgba(244,143,177,0.25); border-radius: 8px; padding: 12px 14px; margin-top: 12px; }
+  .mfb-label { font-size: 9px; color: var(--accent5); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; font-weight: 700; }
+
+  .pro-item, .con-item { display: flex; gap: 6px; font-size: 12px; padding: 3px 0; line-height: 1.4; }
+  .pro-item::before { content: '+'; color: var(--accent3); font-weight: 700; flex-shrink: 0; }
+  .con-item::before { content: '−'; color: var(--accent4); font-weight: 700; flex-shrink: 0; }
+
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); }
+
+  @media (max-width: 900px) {
+    header, .controls, main { padding-left: 16px; padding-right: 16px; }
+    header h1 { font-size: 36px; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SUV SHOWDOWN 2025</h1>
+  <p>Family-ready · CarPlay-compatible · With photos & reliability scores</p>
+  <div class="header-badges">
+    <span class="hbadge hb-fam">👶 Family-Friendly Only</span>
+    <span class="hbadge hb-car">🍎 CarPlay Compatible</span>
+    <span class="hbadge hb-rem">✗ 10 vehicles removed</span>
+  </div>
+</header>
+
+<div class="controls">
+  <label>Filter:</label>
+  <button class="filter-btn active" data-filter="all">All (8)</button>
+  <button class="filter-btn" data-filter="gas">Gas</button>
+  <button class="filter-btn" data-filter="hybrid">Hybrid</button>
+  <button class="filter-btn" data-filter="ev">Electric</button>
+  <button class="filter-btn" data-filter="offroad">Off-Road ★★★★+</button>
+  <button class="filter-btn" data-filter="7seat">7+ Seats</button>
+  <button class="filter-btn" data-filter="reliable">Most Reliable (70+)</button>
+  <div class="view-toggle">
+    <button class="view-btn active" id="btnCards">⊞ Cards</button>
+    <button class="view-btn" id="btnTable">☰ Table</button>
+  </div>
+</div>
+
+<main>
+  <!-- CARD GRID -->
+  <div class="card-grid" id="cardGrid"></div>
+
+  <!-- TABLE VIEW -->
+  <div class="table-wrap" id="tableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Photo</th>
+          <th>Vehicle</th>
+          <th>Type</th>
+          <th>Base Price</th>
+          <th>Efficiency</th>
+          <th>Seats</th>
+          <th>Sunroof</th>
+          <th>Off-Road</th>
+          <th>Comfort</th>
+          <th class="th-rel">Reliability</th>
+          <th class="th-fam">🛒 Stroller</th>
+          <th class="th-fam">👶 Kids</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span><span style="color:var(--accent3)">■</span> Reliability score out of 100 (Auto Reliability Index / Consumer Reports / brand averages)</span>
+    <span><span style="color:var(--accent3)">✓ Easy</span> stroller = full-size fits no problem</span>
+    <span><span style="color:var(--accent)">~ Tight</span> = fits folded</span>
+    <span>Click any card for full details</span>
+  </div>
+</main>
+
+<!-- DETAIL MODAL -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-modal" id="detailModal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const vehicles = [
+  {
+    id: 1, name: "Toyota 4Runner", model: "SR5 / TRD Pro / Trailhunter",
+    type: "gas", tags: ["gas","offroad"],
+    basePrice: 42000, topPrice: 70000,
+    mpg: "17/21 (19 comb.)", mpgNum: 19,
+    seats: "5 (opt 7)", seatsNum: 7,
+    sunroof: "optional", offroad: 5, comfort: 3, tow: 6000,
+    reliability: 81, relVerdict: "Excellent", relClass: "rel-excellent",
+    relNote: "81/100 — Auto Reliability Index. Toyota brand scores #1 in Consumer Reports (66/100). Complaint rate below segment average.",
+    pros: ["Legendary reliability & resale value","Best stock off-road capability","New TNGA-F platform for 2025","Optional 3rd row"],
+    cons: ["Interior not luxurious","Thirstier than hybrid rivals","Smaller than Tahoe"],
+    notes: "Complete redesign for 2025. Body-on-frame, locking rear diff, 9.2\" ground clearance. Trailhunter trim is overland-ready. Wireless CarPlay standard.",
+    stroller: "easy", strollerNote: "47 cu ft cargo — full-size stroller fits comfortably",
+    kidsNum: 3, kidsNote: "2 car seats row 2 + 1 child in opt. row 3", familyScore: 7,
+    img: "https://www.motortrend.com/uploads/2024/10/2025-Toyota-4Runner-Trailhunter-front-three-quarter-1.jpg"
+  },
+  {
+    id: 2, name: "Toyota Land Cruiser", model: "1958 / First Edition",
+    type: "hybrid", tags: ["hybrid","offroad"],
+    basePrice: 57345, topPrice: 76345,
+    mpg: "22/25 (23 comb.)", mpgNum: 23,
+    seats: "5", seatsNum: 5,
+    sunroof: "standard", offroad: 5, comfort: 4, tow: 6000,
+    reliability: 78, relVerdict: "Good", relClass: "rel-good",
+    relNote: "78/100 estimated — Toyota brand #1 in CR. CR predicts 'about average' for newer models. Strong heritage reliability.",
+    pros: ["Best MPG for a body-on-frame 4WD","Hybrid powertrain","Class-leading trail capability","326 hp turbo hybrid"],
+    cons: ["Only 5 seats — no 3rd row","Pricier than 4Runner","High demand / waitlists"],
+    notes: "Returned to US 2024. 2.4L turbo hybrid, 8.7\" ground clearance. Twins the Lexus GX platform. Wireless CarPlay standard.",
+    stroller: "easy", strollerNote: "82 cu ft max cargo — stroller no problem",
+    kidsNum: 2, kidsNote: "2 car seats row 2; no 3rd row limits kids count", familyScore: 6,
+    img: "https://www.caranddriver.com/photos/g45385846/2024-toyota-land-cruiser-photos/?slide=1"
+  },
+  {
+    id: 3, name: "Chevy Tahoe", model: "LS / LT / RST / Z71 / High Country",
+    type: "gas", tags: ["gas","7seat"],
+    basePrice: 57500, topPrice: 82000,
+    mpg: "15/20 (17 comb.) / Diesel: 20/27", mpgNum: 17,
+    seats: "7–9", seatsNum: 9,
+    sunroof: "optional", offroad: 2, comfort: 4, tow: 8600,
+    reliability: 80, relVerdict: "Good", relClass: "rel-good",
+    relNote: "80/100 for 2025 — Auto Reliability Index. Strong improvement from 58/100 in 2021. Chevrolet brand scores 42/100 overall (CR), but the 2025 Tahoe specifically performs well.",
+    pros: ["Up to 9-passenger seating","122 cu ft cargo","Turbodiesel option (27 mpg hwy)","8,600 lb tow"],
+    cons: ["Low MPG on V8","Not designed for off-road","Big footprint in cities"],
+    notes: "Full-size king. V8 (355 hp) or turbodiesel (305 hp). 17.7\" touchscreen for 2025. Wireless CarPlay standard.",
+    stroller: "easy", strollerNote: "122 cu ft max — fits 2 strollers simultaneously",
+    kidsNum: 5, kidsNote: "2 car seats row 2 + 3 kids row 3 on bench; rows are wide", familyScore: 10,
+    img: "https://www.motortrend.com/uploads/2024/09/2025-Chevrolet-Tahoe-High-Country-front-three-quarter-2.jpg"
+  },
+  {
+    id: 4, name: "Hyundai Palisade", model: "SE / SEL / XRT / Calligraphy",
+    type: "gas", tags: ["gas","7seat"],
+    basePrice: 41035, topPrice: 56000,
+    mpg: "19/25 (21 comb.)", mpgNum: 21,
+    seats: "7–8", seatsNum: 8,
+    sunroof: "standard", offroad: 2, comfort: 4, tow: 5000,
+    reliability: 70, relVerdict: "Good", relClass: "rel-good",
+    relNote: "70/100 for 2025 — Auto Reliability Index. Consumer Reports rates 2025 Palisade 'about average.' Hyundai brand scores 48/100 (CR). 3 NHTSA recalls in 2025.",
+    pros: ["Best value 3-row SUV","Panoramic sunroof standard","Premium interior for price","Loaded safety tech"],
+    cons: ["No hybrid on base trims","Not off-road capable","Average reliability vs Toyotas"],
+    notes: "Top-ranked 3-row midsize for value. 2025 adds Hybrid on select trims (28+ mpg). Calligraphy is near-luxury. Wireless CarPlay standard.",
+    stroller: "easy", strollerNote: "45 cu ft with row 3 down — full-size stroller fits",
+    kidsNum: 4, kidsNote: "2 car seats row 2 + 2 kids row 3; 8-seat bench row 2 option", familyScore: 9,
+    img: "https://www.motortrend.com/uploads/2024/01/2024-Hyundai-Palisade-Calligraphy-front-three-quarter.jpg"
+  },
+  {
+    id: 5, name: "Hyundai Santa Fe", model: "SE / SEL / XRT / Calligraphy / Hybrid",
+    type: "hybrid", tags: ["hybrid","7seat"],
+    basePrice: 34200, topPrice: 52000,
+    mpg: "25/28 (26 comb.) / Hybrid: ~27 real", mpgNum: 27,
+    seats: "6–7", seatsNum: 7,
+    sunroof: "optional", offroad: 2, comfort: 4, tow: 3500,
+    reliability: 75, relVerdict: "Good", relClass: "rel-good",
+    relNote: "75/100 for 2025 — Auto Reliability Index (best year ever for this model). J.D. Power gives 2025 Santa Fe 82/100 for quality. 10-yr/100K powertrain warranty helps.",
+    pros: ["Most affordable family 3-row","Available Hybrid","Defender-inspired redesign","10-yr powertrain warranty"],
+    cons: ["Real-world hybrid mpg lower than EPA","3rd row is cramped for adults","Modest towing"],
+    notes: "Major 2024 redesign — 3-row with hybrid option. Blocky Defender-inspired look. Wireless CarPlay standard.",
+    stroller: "tight", strollerNote: "Only 14.6 cu ft with row 3 up; fold row 3 for stroller",
+    kidsNum: 3, kidsNote: "2 car seats row 2 + 1 smaller child row 3", familyScore: 7,
+    img: "https://www.motortrend.com/uploads/2024/02/2025-Hyundai-Santa-Fe-front-three-quarter.jpg"
+  },
+  {
+    id: 6, name: "Range Rover Sport", model: "S / SE / Dynamic / HSE / Autobiography",
+    type: "hybrid", tags: ["hybrid","lux","offroad"],
+    basePrice: 84500, topPrice: 135000,
+    mpg: "19/25 (21 comb.) / PHEV: 50+ MPGe", mpgNum: 21,
+    seats: "5 (opt 7)", seatsNum: 7,
+    sunroof: "standard", offroad: 4, comfort: 5, tow: 7716,
+    reliability: 57, relVerdict: "Mixed", relClass: "rel-mixed",
+    relNote: "57/100 avg across years — Auto Reliability Index (2025 model best at 68/100). JD Power: 274 problems/100 vehicles vs 204 industry avg. Land Rover not ranked by CR due to insufficient data but brand history is below average.",
+    pros: ["Dynamic sport driving + serious off-road","PHEV option (50+ MPGe)","Panoramic roof standard","Iconic prestige"],
+    cons: ["Highest price on list","⚠️ Below-average reliability","Dealership experience rated poorly","Parts availability concerns"],
+    notes: "The sporty Range Rover. PHEV option delivers 50+ MPGe. V8 available. Seats 5 standard, 7 optional. Wireless CarPlay standard.",
+    stroller: "easy", strollerNote: "33.5 cu ft behind row 2; generous with row 3 folded",
+    kidsNum: 4, kidsNote: "2 car seats row 2 + 2 small kids in optional row 3", familyScore: 7,
+    img: "https://www.motortrend.com/uploads/2023/10/2024-Land-Rover-Range-Rover-Sport-front-three-quarter.jpg"
+  },
+  {
+    id: 7, name: "Defender 110", model: "S / SE / X / X-Dynamic / Carpathian",
+    type: "gas", tags: ["gas","offroad","lux"],
+    basePrice: 59000, topPrice: 130000,
+    mpg: "17/22 (19 comb.)", mpgNum: 19,
+    seats: "5–7", seatsNum: 7,
+    sunroof: "optional", offroad: 5, comfort: 4, tow: 8201,
+    reliability: 60, relVerdict: "Mixed", relClass: "rel-mixed",
+    relNote: "60/100 avg — Auto Reliability Index. Best year: 2024 (64/100). JD Power: 274 problems/100 vehicles. CR predicts 2025 Defender will be 'less reliable than other new cars.' Main issues: electrical, sensors, windshield cracking.",
+    pros: ["Legendary off-road + modern luxury","8,201 lb tow","Large boot for stroller","PHEV option (P400e)"],
+    cons: ["⚠️ Below-average reliability","Land Rover parts availability","Very expensive fully loaded","Dealership service frustrations"],
+    notes: "Defender 110 (4-door) seats 5–7. OCTA ~$150K. Wade depth: 35.4\". Wireless CarPlay standard.",
+    stroller: "easy", strollerNote: "Massive flat boot — stroller loads easily",
+    kidsNum: 4, kidsNote: "2 car seats row 2 + 2 kids row 3; proper 4-door access", familyScore: 8,
+    img: "https://www.motortrend.com/uploads/2023/01/2023-Land-Rover-Defender-110-SE-front-three-quarter.jpg"
+  },
+  {
+    id: 8, name: "Land Rover Discovery", model: "S / SE / Dynamic SE / Gemini / Tempest",
+    type: "gas", tags: ["gas","lux","7seat","offroad"],
+    basePrice: 62050, topPrice: 100000,
+    mpg: "19/24 (21 comb.)", mpgNum: 21,
+    seats: "7", seatsNum: 7,
+    sunroof: "standard", offroad: 4, comfort: 5, tow: 8201,
+    reliability: 56, relVerdict: "Mixed", relClass: "rel-mixed",
+    relNote: "56/100 — Land Rover brand average (Auto Reliability Index). CR: oil filter housing recall (cracking, fire risk). Sliding 2nd row adds mechanical complexity. Similar issues to Defender: electrical, sensors.",
+    pros: ["True 7-seat luxury off-roader","Gemini / Tempest special editions","Sliding 2nd row for 3rd-row access","Terrain Response 2"],
+    cons: ["⚠️ Below-average reliability","Land Rover service concerns","Pricey","Oil filter housing recall history"],
+    notes: "Best family off-roader. Gemini & Tempest are stunning special editions. Sliding 2nd row makes loading the 3rd row much easier. Wireless CarPlay standard.",
+    stroller: "easy", strollerNote: "Fold row 3: large flat boot — stroller + gear, no problem",
+    kidsNum: 5, kidsNote: "2 car seats row 2 + 2–3 kids row 3; sliding row 2 helps loading", familyScore: 9,
+    img: "https://www.motortrend.com/uploads/2024/02/2023-Land-Rover-Discovery-R-Dynamic-SE-front-three-quarter.jpg"
+  },
+  {
+    id: 9, name: "Rivian R1S", model: "Dual Standard / Dual Max / Quad Max",
+    type: "ev", tags: ["ev","offroad","7seat"],
+    basePrice: 76990, topPrice: 125990,
+    mpg: "73 MPGe / 258–414 mi range", mpgNum: 70,
+    seats: "7", seatsNum: 7,
+    sunroof: "standard panoramic", offroad: 5, comfort: 4, tow: 7700,
+    reliability: 58, relVerdict: "Mixed", relClass: "rel-mixed",
+    relNote: "58/100 — Auto Reliability Index. Consumer Reports rates 2025 R1S 'less reliable than other cars.' 9 NHTSA recalls. Rivian brand scores 24/100 in CR brand rankings (lowest). Main issues: body hardware, electronics, software. Owners still love it.",
+    pros: ["Best electric off-roader","Gear tunnel under floor = extra storage","Standard panoramic sunroof","7 seats + 7,700 lb tow"],
+    cons: ["⚠️ Lowest reliability on this list","9 NHTSA recalls","CarPlay coming via update (not yet live)","Smaller charging network"],
+    notes: "Electric adventure beast. Gear tunnel is genius for stroller + gear. Air suspension. ⚠️ CarPlay confirmed coming via OTA update but not yet available. 8-yr battery warranty.",
+    stroller: "easy", strollerNote: "Gear tunnel under floor + full cargo area = stroller paradise",
+    kidsNum: 4, kidsNote: "2 car seats row 2 + 2 kids row 3; gear tunnel frees up main cargo", familyScore: 9,
+    img: "https://www.motortrend.com/uploads/2024/07/2025-Rivian-R1S-front-three-quarter-2.jpg"
+  }
+];
+
+let filtered = [...vehicles];
+let currentView = 'cards';
+
+// ── RELIABILITY HELPERS ──
+function relColor(score) {
+  if (score >= 80) return '#81c784';
+  if (score >= 70) return '#aed581';
+  if (score >= 60) return '#e8c547';
+  if (score >= 50) return '#ffb74d';
+  return '#ef5350';
+}
+function relLabel(score) {
+  if (score >= 80) return 'Excellent';
+  if (score >= 70) return 'Good';
+  if (score >= 60) return 'Average';
+  if (score >= 50) return 'Mixed';
+  return 'Poor';
+}
+
+// ── IMAGE HELPERS ──
+function getImageUrl(v) {
+  const imgs = {
+    1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/2025_Toyota_4Runner_TRD_Off-Road,_front_8.18.24.jpg/800px-2025_Toyota_4Runner_TRD_Off-Road,_front_8.18.24.jpg',
+    2: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/2024_Toyota_Land_Cruiser_First_Edition,_front_9.6.23.jpg/800px-2024_Toyota_Land_Cruiser_First_Edition,_front_9.6.23.jpg',
+    3: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/2022_Chevrolet_Tahoe_Z71,_front_10.13.21.jpg/800px-2022_Chevrolet_Tahoe_Z71,_front_10.13.21.jpg',
+    4: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/2023_Hyundai_Palisade_Calligraphy_AWD,_front_3.20.22.jpg/800px-2023_Hyundai_Palisade_Calligraphy_AWD,_front_3.20.22.jpg',
+    5: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/2024_Hyundai_Santa_Fe_XRT_AWD,_front_11.18.23.jpg/800px-2024_Hyundai_Santa_Fe_XRT_AWD,_front_11.18.23.jpg',
+    6: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/2023_Land_Rover_Range_Rover_Sport_SE,_front_9.10.22.jpg/800px-2023_Land_Rover_Range_Rover_Sport_SE,_front_9.10.22.jpg',
+    7: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/2023_Land_Rover_Defender_110_SE,_front_11.6.22.jpg/800px-2023_Land_Rover_Defender_110_SE,_front_11.6.22.jpg',
+    8: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/2021_Land_Rover_Discovery_SE_R-Dynamic,_front_8.1.21.jpg/800px-2021_Land_Rover_Discovery_SE_R-Dynamic,_front_8.1.21.jpg',
+    9: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/2022_Rivian_R1S_Launch_Edition,_front_7.2.22.jpg/800px-2022_Rivian_R1S_Launch_Edition,_front_7.2.22.jpg',
+  };
+  return imgs[v.id] || '';
+}
+
+function imgTag(v, cls, fallback='🚙') {
+  const src = getImageUrl(v);
+  if (!src) return `<div class="${cls}-placeholder">${fallback}</div>`;
+  return `<img class="${cls}" src="${src}" alt="${v.name}" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.outerHTML='<div class=&quot;${cls}-placeholder&quot;>${fallback}</div>'">`;
+}
+
+// ── TYPE TAG ──
+function typeTag(t) {
+  const l = { gas:'Gas', hybrid:'Hybrid', ev:'Electric' };
+  return `<span class="tag tag-${t}">${l[t]}</span>`;
+}
+function stars(n) { return Array.from({length:5},(_,i)=>`<span class="${i<n?'':'e'}">★</span>`).join(''); }
+function pips(n) { return `<div class="pips">${Array.from({length:5},(_,i)=>`<div class="pip ${i<n?'on':''}"></div>`).join('')}</div>`; }
+function mpgBar(num) {
+  const isEV = num > 50;
+  const pct = isEV ? Math.min(100,(num/130)*100) : Math.min(100,(num/40)*100);
+  return `<div class="mpg-bar"><div class="mpg-bar-fill" style="width:${pct}%"></div></div>`;
+}
+function fmt(p) { return '$'+p.toLocaleString(); }
+
+// ── RENDER CARDS ──
+function renderCards() {
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+  filtered.forEach(v => {
+    const rc = relColor(v.reliability);
+    const rl = relLabel(v.reliability);
+    const pct = (v.reliability / 100) * 100;
+    const sIcon = v.stroller === 'easy' ? '<span class="stroller-yes">✓</span>' : '<span class="stroller-tight">~</span>';
+    const div = document.createElement('div');
+    div.className = 'vehicle-card';
+    div.dataset.id = v.id;
+    div.innerHTML = `
+      ${imgTag(v, 'card-img')}
+      <div class="card-body">
+        <div class="card-header">
+          <div>
+            <div class="card-name">${v.name}</div>
+            <div class="card-model">${v.model}</div>
+          </div>
+          ${typeTag(v.type)}
+        </div>
+        <div class="card-price">${fmt(v.basePrice)}</div>
+        <div class="card-price-sub">up to ${fmt(v.topPrice)}</div>
+
+        <div class="card-stats">
+          <div class="cstat"><div class="cstat-val">${v.mpgNum > 50 ? v.mpgNum+'MPGe' : v.mpgNum+'mpg'}</div><div class="cstat-label">Efficiency</div></div>
+          <div class="cstat"><div class="cstat-val">${v.seatsNum}</div><div class="cstat-label">Max Seats</div></div>
+          <div class="cstat"><div class="cstat-val">${v.tow ? (v.tow/1000).toFixed(1)+'k' : '—'}</div><div class="cstat-label">Tow lbs</div></div>
+        </div>
+
+        <div class="reliability-bar-wrap ${v.relClass}">
+          <div class="rel-header">
+            <span class="rel-label">Reliability</span>
+            <span><span class="rel-score">${v.reliability}/100</span> <span class="rel-verdict">${rl}</span></span>
+          </div>
+          <div class="rel-bar-bg"><div class="rel-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+
+        <div class="card-family">
+          <div class="cfam-item">${sIcon} <span class="cfam-val">${v.stroller === 'easy' ? 'Stroller fits' : 'Stroller tight'}</span></div>
+          <div class="cfam-item" style="margin-left:auto">${'👶'.repeat(Math.min(v.kidsNum,5))} <span class="cfam-val">${v.kidsNum} kids</span></div>
+        </div>
+      </div>
+    `;
+    div.addEventListener('click', () => openModal(v.id));
+    grid.appendChild(div);
+  });
+}
+
+// ── RENDER TABLE ──
+function renderTable() {
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '';
+  filtered.forEach(v => {
+    const rc = relColor(v.reliability);
+    const pct = (v.reliability / 100) * 100;
+    const tr = document.createElement('tr');
+    tr.dataset.id = v.id;
+    const sIcon = v.stroller === 'easy' ? '<span class="check">✓ Easy</span>' : '<span class="optional">~ Tight</span>';
+    tr.innerHTML = `
+      <td>${imgTag(v,'thumb')}</td>
+      <td class="name-cell">${v.name}<div class="sub">${v.model}</div></td>
+      <td>${typeTag(v.type)}</td>
+      <td><div class="price-val">${fmt(v.basePrice)}</div><div class="price-top">to ${fmt(v.topPrice)}</div></td>
+      <td><div class="mpg-val">${v.mpgNum > 50 ? v.mpgNum+' MPGe' : v.mpgNum+' mpg'}</div>${mpgBar(v.mpgNum)}<div class="mpg-note">${v.mpg.split('(')[0].trim()}</div></td>
+      <td>${v.seats}</td>
+      <td>${v.sunroof === 'standard' ? '<span class="check">✓ Std</span>' : '<span class="optional">opt.</span>'}</td>
+      <td>${pips(v.offroad)}</td>
+      <td><div class="comfort-stars">${stars(v.comfort)}</div></td>
+      <td>
+        <div style="color:${rc};font-family:'DM Mono',monospace;font-size:13px;font-weight:700">${v.reliability}/100</div>
+        <div style="color:${rc};font-size:10px;text-transform:uppercase;letter-spacing:0.5px">${relLabel(v.reliability)}</div>
+        <div class="trel-bar"><div class="trel-fill" style="width:${pct}%;background:${rc}"></div></div>
+      </td>
+      <td class="stroller-cell" style="font-size:12px">${sIcon}<div style="font-size:10px;color:var(--muted);margin-top:3px;max-width:100px">${v.strollerNote}</div></td>
+      <td class="kids-cell">${'👶'.repeat(Math.min(v.kidsNum,5))} <strong>${v.kidsNum}</strong><div style="font-size:10px;color:var(--muted);margin-top:2px;max-width:110px">${v.kidsNote}</div></td>
+    `;
+    tr.addEventListener('click', () => openModal(v.id));
+    body.appendChild(tr);
+  });
+}
+
+// ── MODAL ──
+function openModal(id) {
+  const v = vehicles.find(x => x.id === id);
+  const rc = relColor(v.reliability);
+  const pct = (v.reliability / 100) * 100;
+  const strollerColor = v.stroller === 'easy' ? '#81c784' : '#e8c547';
+  const strollerLabel = v.stroller === 'easy' ? '✓ Fits easily' : '~ Tight fit';
+
+  document.getElementById('modalContent').innerHTML = `
+    ${imgTag(v, 'modal-img')}
+    <div class="modal-body">
+      <div class="modal-name">${v.name}</div>
+      <div class="modal-sub">${v.model} · ${typeTag(v.type)}</div>
+
+      <div class="modal-price-box">
+        <div class="mph-label">Base Price</div>
+        <div class="mph-val">${fmt(v.basePrice)}</div>
+        <div class="mph-sub">Up to ${fmt(v.topPrice)} fully loaded</div>
+      </div>
+
+      <div class="reliability-bar-wrap ${v.relClass}" style="margin-top:14px">
+        <div class="rel-header">
+          <span class="rel-label">Reliability Score</span>
+          <span><span class="rel-score">${v.reliability}/100</span> &nbsp;<span class="rel-verdict">${relLabel(v.reliability)}</span></span>
+        </div>
+        <div class="rel-bar-bg"><div class="rel-bar-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5">${v.relNote}</div>
+      </div>
+
+      <div class="modal-fam-box">
+        <div class="mfb-label">👶 Family Snapshot</div>
+        <div class="modal-row"><span class="mk">Stroller</span><span class="mv" style="color:${strollerColor}">${strollerLabel}</span></div>
+        <div class="modal-row"><span class="mk">Detail</span><span class="mv">${v.strollerNote}</span></div>
+        <div class="modal-row"><span class="mk">Kids (realistic)</span><span class="mv">${'👶'.repeat(Math.min(v.kidsNum,6))} ${v.kidsNum}</span></div>
+        <div class="modal-row"><span class="mk">Setup</span><span class="mv">${v.kidsNote}</span></div>
+        <div class="modal-row"><span class="mk">Family score</span><span class="mv">${v.familyScore}/10</span></div>
+        <div class="modal-row"><span class="mk">CarPlay</span><span class="mv" style="color:#81c784">${v.id===9?'Coming via OTA update ⚠️':'✓ Wireless'}</span></div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Key Specs</h3>
+        <div class="modal-row"><span class="mk">Fuel</span><span class="mv">${v.type==='ev'?'All-Electric':v.type==='hybrid'?'Hybrid':'Gasoline'}</span></div>
+        <div class="modal-row"><span class="mk">Efficiency</span><span class="mv">${v.mpg}</span></div>
+        <div class="modal-row"><span class="mk">Seating</span><span class="mv">${v.seats}</span></div>
+        <div class="modal-row"><span class="mk">Sunroof</span><span class="mv">${v.sunroof}</span></div>
+        <div class="modal-row"><span class="mk">Towing</span><span class="mv">${v.tow?v.tow.toLocaleString()+' lbs':'N/A'}</span></div>
+        <div class="modal-row"><span class="mk">Off-Road</span><span class="mv">${'●'.repeat(v.offroad)+'○'.repeat(5-v.offroad)} ${v.offroad}/5</span></div>
+        <div class="modal-row"><span class="mk">Comfort</span><span class="mv">${'★'.repeat(v.comfort)+'☆'.repeat(5-v.comfort)} ${v.comfort}/5</span></div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Notes</h3>
+        <p style="font-size:12px;color:#9a9fb8;line-height:1.6">${v.notes}</p>
+      </div>
+
+      <div class="modal-section">
+        <h3>Pros & Cons</h3>
+        ${v.pros.map(p=>`<div class="pro-item">${p}</div>`).join('')}
+        ${v.cons.map(c=>`<div class="con-item">${c}</div>`).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', () => {
+  document.getElementById('detailOverlay').classList.remove('open');
+});
+document.getElementById('detailOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('detailOverlay')) {
+    document.getElementById('detailOverlay').classList.remove('open');
+  }
+});
+
+// ── FILTERS ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    if (f==='all') filtered = [...vehicles];
+    else if (f==='gas') filtered = vehicles.filter(v=>v.type==='gas');
+    else if (f==='hybrid') filtered = vehicles.filter(v=>v.type==='hybrid');
+    else if (f==='ev') filtered = vehicles.filter(v=>v.type==='ev');
+    else if (f==='offroad') filtered = vehicles.filter(v=>v.offroad>=4);
+    else if (f==='7seat') filtered = vehicles.filter(v=>v.seatsNum>=7);
+    else if (f==='reliable') filtered = vehicles.filter(v=>v.reliability>=70);
+    render();
+  });
+});
+
+// ── VIEW TOGGLE ──
+document.getElementById('btnCards').addEventListener('click', () => {
+  currentView = 'cards';
+  document.getElementById('btnCards').classList.add('active');
+  document.getElementById('btnTable').classList.remove('active');
+  document.getElementById('cardGrid').style.display = 'grid';
+  document.getElementById('tableWrap').style.display = 'none';
+});
+document.getElementById('btnTable').addEventListener('click', () => {
+  currentView = 'table';
+  document.getElementById('btnTable').classList.add('active');
+  document.getElementById('btnCards').classList.remove('active');
+  document.getElementById('cardGrid').style.display = 'none';
+  document.getElementById('tableWrap').style.display = 'block';
+  renderTable();
+});
+
+function render() {
+  renderCards();
+  if (currentView === 'table') renderTable();
+}
+
+render();
+</script>
+</body>
+</html>
